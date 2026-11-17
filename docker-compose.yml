@@ -1,0 +1,29 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: orders
+      POSTGRES_USER: demo
+      POSTGRES_PASSWORD: demo-local-only
+    ports: ["5433:5432"]
+    volumes:
+      - outbox_pg:/var/lib/postgresql/data
+  redpanda:
+    image: docker.redpanda.com/redpandadata/redpanda:v26.2.7
+    command:
+      - redpanda
+      - start
+      - --mode
+      - dev-container
+      - --smp
+      - '1'
+      - --kafka-addr
+      - internal://0.0.0.0:9092,external://0.0.0.0:19092
+      - --advertise-kafka-addr
+      - internal://redpanda:9092,external://localhost:19092
+    ports: ["19092:19092"]
+    volumes:
+      - redpanda_data:/var/lib/redpanda/data
+volumes:
+  outbox_pg:
+  redpanda_data:

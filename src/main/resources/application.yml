@@ -1,0 +1,30 @@
+server:
+  port: 8080
+spring:
+  datasource:
+    url: ${DB_JDBC_URL:jdbc:postgresql://localhost:5433/orders}
+    username: ${DB_USER:demo}
+    password: ${DB_PASSWORD:demo-local-only}
+  jpa:
+    hibernate:
+      ddl-auto: update # Local demo only. Production must use migrations.
+    open-in-view: false
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP:localhost:19092}
+    consumer:
+      group-id: order-projection
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+app:
+  publisher:
+    enabled: true
+    delay-ms: 2000
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
